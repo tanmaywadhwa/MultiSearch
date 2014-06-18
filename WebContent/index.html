@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    
+    <head>
+    <title>We are QWERTY</title>
+       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+       <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,300' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+       <link rel="stylesheet" href="jquery-ui.css">
+       <link rel="stylesheet" href="style.css">
+       <script src="jquery-1.10.2.js"></script> 
+       <script src="jquery-ui.js"></script>
+        <script>
+$(function() {
+    $("#autosearch").autocomplete({
+        source: function( request, response ) {
+            var str=request.term;
+			
+			$.ajax({
+			
+			
+            url: "http://localhost:8983/solr/Wikipedia/query?facet=true&facet.field=suggestiontitle&facet.prefix="+str,
+            data: { 
+                
+				facet:'true',
+                wt: 'json',
+             }, 
+             dataType: "jsonp",
+             jsonp: 'json.wrf',
+             
+             success: function( data ) {
+			     //alert(facet_counts);
+			     var tr=data.facet_counts.facet_fields.suggestiontitle;
+				 
+				 var results = [];
+				  var tr1=tr.toString().split(",");
+				  var count=10;  // MAXIMUM NO. OF SUGGESTIONS
+				 for ( var i = 0; i < tr1.length; i++ ) {
+                    if(tr1[i]!=0 && count>0)
+					{
+					  results.push(tr1[i]);
+					  count--;
+					}
+					
+ 
+                  }
+				 
+                response(results);
+				
+				
+            }
+          }); 
+         },
+        minLength: 1
+        });
+    });
+</script>
+
+    </head>
+    <body >
+    <center>
+    <img src="logo.jpg">
+    <br>
+	
+    <form action="Responder" method="post">
+    <input type="text" size="80" name="q" id="autosearch" class="autosearch" value="Enter Query" onclick="this.value='';" onfocus="this.select()" onblur="this.value=!this.value?'Enter Query':this.value;"><br>
+    <input type="submit" value="Search" onclick="f1()"/>
+    </form>
+    </center>
+    <table  > 
+    </body>    
+    </html>
